@@ -1,0 +1,177 @@
+{% extends "m_base.html" %}
+
+{% block style %}
+{% endblock %}
+
+{% block content %}
+<!--老师账号-->
+<div>
+    <div style="display: flex;justify-content: space-between;margin-bottom: 10px">
+        <div>
+            共计<span style="color: red;font-weight: bold;"><$ member.total $></span>个账号，已经激活<span style="color: red;font-weight: bold;"><$ member.activenum $></span>个，未激活<span style="color: red;font-weight: bold;"><$ member.unactivenum $></span>，已过期<span style="color: red;font-weight: bold;"><$ member.activednum $></span>
+        </div>
+        <div><a href="../teacher/teachermanager" style="text-decoration: none;">跳转到老师管理页面下载账号表</a></div>
+    </div>
+    <!--账号表-->
+    <table id="mytable" class="table-box"></table>
+</div>
+<!--输入弹框-->
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">修改学生昵称</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="input_name">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button id="btn_ok" type="button" class="btn btn-primary" style="background-color: red;border:none;" data-bs-dismiss="modal" onclick="okClick()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+
+    function loadTable(num){
+        $("#mytable").bootstrapTable({
+            url:"studentlist",
+            method:"post",
+            dataField:"data", //返回json的key
+            contentType:"application/json",
+            dataType:"json",
+            striped:false,
+            cache:false,
+            pagination:true,
+            paginationDetailHAlign:"display",
+            sidePagination:"server",
+            pageNumber:1,
+            pageSize:10,
+            queryParams:function (param) {
+                var temp = {
+                    page:(param.offset/param.limit)+1,
+                    size:10,
+                };
+                return temp;
+            },
+            columns:[{
+                field:"username",
+                title:"账号id",
+            },{
+                field:"initialpw",
+                title:"初始密码",
+                formatter:resetFormatter
+            },{
+                field:"nickname",
+                title:"姓名",
+                formatter:actionFormatter
+            },/*{
+                field:"code",
+                title:"激活码",
+            },*/{
+                field:"active",
+                title:"状态",
+                formatter:activeState
+            },{
+                field:"endtime",
+                title:"有效期",
+            }/*,{
+                    field:"username",
+                    title:"操作",
+                    width:120,
+                    align:"center",
+                    valign:"middle",
+                    formatter:actionFormatter
+                }*/],
+            onLoadSuccess:function(){
+                console.log("table加载成功")
+            },
+            onLoadError:function(e){
+                console.log("table加载失败");
+            },
+        })
+    }
+
+    /**
+     * 账号状态
+     * @param value
+     * @param row
+     * @param index
+     */
+    function activeState(value,row,index){
+        if(value == 1){
+            return "<span style='color:red'>已激活</span>";
+        }else if(value == undefined || value == 0){
+            return "<span style='color:black'>未激活</span>";
+        }else{
+            return "<span style='color:gray'>已过期</span>";
+        }
+    }
+
+    function actionFormatter(value,row,index){
+        var name;
+        if(row.nickname != undefined){
+            name = row.nickname;
+        }else{
+            name = row.username;
+        }
+        return "<a href='javascript:;' style='text-decoration: none;' data-bs-toggle='modal' data-bs-target='#staticBackdrop' onclick='editorname(\""+row.uid+"\")'>"+name+"</a>"
+    }
+
+    /**
+     * 重置密码
+     * @param value
+     * @param row
+     * @param index
+     */
+    function resetFormatter(value,row,index){
+        if(row.isreset){
+            return "<div><a style='text-decoration: none;' href='javascript:;' onclick='resetPassword(\""+row.uid+"\",\""+row.initialpw+"\")'>重置为初始密码</a></div>"
+        }else{
+            return value
+        }
+    }
+
+    /**
+     * 重置用户密码
+     */
+    function resetPassword(uid,initialpw){
+        post("index/resetUserPassword",{uid:uid,initialpw:initialpw},function (res) {
+            console.log("res:"+res)
+            $("#mytable").bootstrapTable('refresh', {url : "studentlist"});
+        })
+    }
+
+    var uid;
+
+    function editorname(id){
+        uid = id;
+    }
+
+    function okClick(){
+        var name = $("#input_name").val()
+        if(uid != undefined && name != undefined){
+            post("student/editorStudentName",{uid:uid,name:name},function(res){
+                console.log(res);
+                if(res.errno == 0){
+                    $("#mytable").bootstrapTable('refresh', {url : "studentlist"});
+                }
+            })
+        }
+
+    }
+
+
+
+    loadTable(1)
+
+
+</script>
+{% endblock %}

@@ -1,0 +1,56 @@
+<style>
+
+    .menuselected{
+        font-weight: bold!important;
+        color: red!important;
+    }
+
+    .menu a{
+        padding: 5px 10px;
+        color: white;
+        text-decoration: none;
+    }
+</style>
+<div>
+    <!--画室名字-->
+    <div class="school_name">
+        <div><span id="schoolname"></span></div>
+        <div class="school_loginout"><a href="javascript:;" onclick="loginout()">退出系统</a></div>
+    </div>
+    <div id="menu" style="margin-top: 30px;">
+        <ul>
+            <li><a id="classmanager" href="../mclass/classmanager">班级管理</a></li>
+            <li><a id="teachermanager" href="../teacher/teachermanager">老师管理</a></li>
+            <li><a id="teacherclassView" href="../teacher/teacherclassView">老师绑定班级</a></li>
+            <li><a id="studentmanager" href="../student/studentmanager">学生管理</a></li>
+            <li><a id="studentclassView" href="../student/studentclassView">学生绑定班级</a></li>
+            {% if (sid == 1) %}
+            <li><a id="schoolmanager" href="../code/schoolmanager">学校管理</a> </li>
+            {% else %}
+            <li><a id="codeview" href="../code/codeview">激活码管理</a></li>
+            {% endif %}
+            <li><a id="brochureview" href="../brochure/brochureView">学校图标</a></li>
+            <li><a id="admininfo" href="../index/admininfoView">管理员信息</a></li>
+
+        </ul>
+    </div>
+</div>
+
+<script>
+
+    var schoolname = localStorage.getItem("name")
+    $("#schoolname").text(schoolname)
+    console.log("currentmenu："+"<$ currentmenu $>")
+    var currentmenu = "<$ currentmenu $>"
+    if(currentmenu != undefined){
+        $("#"+currentmenu).addClass("menuselected")
+    }
+
+    /**
+     * 推出系统
+     */
+    function loginout(){
+        location.replace("http://res.yimios.com:9080/index/login")
+    }
+
+</script>

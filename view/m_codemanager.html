@@ -1,0 +1,284 @@
+{% extends "m_base.html" %}
+
+{% block style %}
+    <style>
+        #managertable tbody{
+            height: 330px;
+        }
+    </style>
+
+{% endblock %}
+
+{% block content %}
+<!--创建激活码-->
+<div>
+    <!--创建学校-->
+    <div>
+        <input type="text" id="input_schoolname" class="input_txt" placeholder="请输入学校名称">
+        <input type="button" style="margin-bottom: 30px;margin-left: 20px;" value="创建学校" class="btn_red" onclick="createSchool()">
+    </div>
+
+    <!--学校激活码-->
+    <table id="mytable" class="table-box"></table>
+    <!--创建账号输入弹框-->
+    <!-- Modal -->
+    <div class="modal fade" id="staticmember" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticmembertitle">创建账号</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="dropdown">
+                        <button type="button" class="btn btn-danger dropdown-toggle" style="background-color: red;border: none;" data-bs-toggle="dropdown" id="btnclass">老师</button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li><a class="dropdown-item" href="#" onclick="selectRole('老师',1)">老师</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="selectRole('学生',2)">学生</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="selectRole('管理员',9)">管理员</a></li>
+                        </ul>
+                    </div>
+                    <input type="text" id="input_member_head" style="margin-top: 20px;" class="form-control" placeholder="账号前缀" aria-describedby="basic-addon2">
+                    <input type="text" id="input_member_no" style="margin-top: 20px;" class="form-control" placeholder="创建账号数量" aria-describedby="basic-addon2">
+                    <input type="text" id="input_password" style="margin-top: 20px;" class="form-control" placeholder="初始密码" aria-describedby="basic-addon2">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button id="btn_member_ok" type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="okMemberClick()">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--创建激活码输入弹框-->
+    <!-- Modal -->
+    <div class="modal fade" id="staticcode" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">创建激活码</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="dropdown">
+                        <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" id="codetype">一个月</button>
+
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li><a class="dropdown-item" href="#" onclick="selectCodeType(7,'5分钟')">5分钟</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="selectCodeType(6,'三天')">三天</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="selectCodeType(1,'一个月')">一个月</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="selectCodeType(2,'三个月')">三个月</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="selectCodeType(3,'六个月')">六个月</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="selectCodeType(4,'12个月')">十二个月</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="selectCodeType(5,'24个月')">二十四个月</a></li>
+                        </ul>
+                    </div>
+                    <input type="text" style="margin-top: 20px;" id="input_code_number" class="form-control" placeholder="创建激活码数量" aria-describedby="basic-addon2">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button id="btn_code_ok" type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="okCodeClick()">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--管理员账号查看-->
+    <div class="modal fade" id="staticmanager" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">管理员账号</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="height: 400px;">
+                    <table id="managertable" style="max-height: 400px;" class="table-box">
+                        <thead>
+                            <tr>
+                                <th>学校名</th>
+                                <th>管理员账号</th>
+                                <th>密码</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn_manager_ok" type="button" class="btn btn-primary" data-bs-dismiss="modal">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block script%}
+<script>
+    loadTable(1)
+
+    var currentRole = 1;
+
+    //选中角色
+    function selectRole(name,role){
+        currentRole = role;
+        $("#btnclass").html(name)
+    }
+
+    function loadTable(num){
+        $("#mytable").bootstrapTable({
+            url:"schoolList",
+            method:"post",
+            dataField:"data", //返回json的key
+            contentType:"application/json",
+            dataType:"json",
+            striped:false,
+            cache:false,
+            pagination:true,
+            paginationDetailHAlign:"display",
+            sidePagination:"server",
+            pageNumber:1,
+            pageSize:10,
+            queryParams:function (param) {
+                var temp = {
+                    page:(param.offset/param.limit)+1,
+                    size:10,
+                };
+                return temp;
+            },
+            columns:[{
+                field:"name",
+                title:"学校名",
+            },{
+                field:"members",
+                title:"账号总数",
+            },{
+                field:"codes",
+                title:"激活码总数",
+            },{
+                field: "sid",
+                title: "操作",
+                formatter:actionFormatter
+            }/*,{
+                    field:"username",
+                    title:"操作",
+                    width:120,
+                    align:"center",
+                    valign:"middle",
+                    formatter:actionFormatter
+                }*/],
+            onLoadSuccess:function(){
+                console.log("table加载成功")
+            },
+            onLoadError:function(e){
+                console.log("table加载失败");
+            },
+        })
+    }
+
+    /**
+     * 操作
+     */
+    function actionFormatter(value,row,index){
+        return "<div><a href='javascript:;' data-bs-toggle='modal' data-bs-target='#staticmember' onclick='createMember(\""+row.sid+"\",\""+row.name+"\")'>创建账号</a>" +
+            "<a style='margin-left: 10px;' href='javascript:;' data-bs-toggle='modal' data-bs-target='#staticcode' onclick='createCode(\""+row.sid+"\")'>创建激活码</a>" +
+            "<a style='margin-left: 10px;' href='javascript:;' data-bs-toggle='modal' data-bs-target='#staticmanager' onclick='managerMemberList(\""+row.sid+"\")'>查看管理员账号</a></div>";
+    }
+
+    var currentSid;
+    var schoolname;
+    var codeType=1;
+
+    /**
+     * 创建学校
+     */
+    function createSchool(){
+        var schoolname = $("#input_schoolname").val()
+        if(schoolname == undefined || schoolname.length == 0){
+            alert("请输入学校名称");
+        }else{
+            post("index/createSchool",{name:schoolname},function (res) {
+                $("#mytable").bootstrapTable('refresh', {url : "schoolList"});
+            })
+        }
+    }
+
+    /**
+     * 创建用户账号
+     */
+    function createMember(sid,name){
+        currentSid = sid
+        schoolname = name;
+    }
+
+    /**
+     * 打开激活码页面
+     */
+    function createCode(sid){
+        currentSid = sid
+    }
+
+    /**
+     * 创建账号
+     */
+    function okMemberClick(){
+        const _head = $("#input_member_head").val()
+        const _num = $("#input_member_no").val()
+        const _initialpw = $("#input_password").val()
+        if(_head && _num){
+            post("code/createMember",{head:_head,role:currentRole,no:_num,schoolid:currentSid,initialpw:_initialpw,schoolname:schoolname},function(res){
+                console.log(res);
+                $("#mytable").bootstrapTable('refresh', {url : "schoolList"});
+            })
+        }
+    }
+
+    /**
+     * 选择激活码类型
+     */
+    function selectCodeType(type,name){
+        codeType = type
+        $("#codetype").html(name)
+    }
+
+    /**
+     * 创建激活码
+     */
+    function okCodeClick(){
+        const _num = $("#input_code_number").val()
+        if(_num){
+            post("code/createCode",{num:_num,schoolid:currentSid,type:codeType},function (res) {
+                console.log(res)
+                $("#mytable").bootstrapTable('refresh', {url : "schoolList"});
+            })
+        }
+    }
+
+    /**
+     * 管理员列表
+     */
+    function managerMemberList(sid){
+        post("code/managerList",{schoolid:sid},function (res) {
+            console.log(res);
+            if(res && res.errno == 0 && res.data.data){
+                $("#managertable tbody").html("");
+                for(var i=0; i<res.data.data.length; i++){
+                    var tr = "<tr>"
+                    tr += "<td>"+res.data.data[i].name+"</td>";
+                    tr += "<td>"+res.data.data[i].username+"</td>";
+                    tr += "<td>"+res.data.data[i].passwordtxt+"</td></tr>";
+                    $("#managertable tbody").append(tr);
+                }
+
+            }
+        })
+    }
+
+
+
+
+</script>
+{% endblock %}

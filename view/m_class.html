@@ -1,0 +1,202 @@
+{% extends "m_base.html" %}
+
+{% block style %}
+    <style>
+
+        .table_box{
+            min-width: 500px;
+        }
+
+        a:hover, a:visited, a:link, a:active {
+            padding: 5px 10px;
+            color: black;
+            text-decoration: none;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<!--具体业务内容-->
+<div>
+    <!--创建班级-->
+    <div>
+        <input type="text" id="txt_name" class="input_txt" placeholder="请输入班级名称">
+        <input type="button" style="margin-bottom: 30px;margin-left: 20px;" value="创建班级" class="btn_red" onclick="createClass()">
+    </div>
+    <!--班级列表-->
+    <!--<div class="table-responsive-xxl">
+        <table class="table table-bordered">
+            <tr>
+                <th scope="col">班级名称</th>
+                <th scope="col">操作</th>
+            </tr>
+            {% for item in classinfo %}
+            <tr>
+                <td><$ item.name $></td>
+                <td>
+                    <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="rename('<$ item.id $>')">重命名</a>
+                    <a href="javascript:;" onclick="delclass('<$ item.id $>')">删除</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>-->
+
+    <table id="mytable" class="table-box row-height"></table>
+
+    <!--弹框-->
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">班级编辑</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="txt_classname">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button id="btn_ok" type="button" class="btn btn-primary" style="background-color: red;border: none;" data-bs-dismiss="modal" onclick="okClick()">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--删除确认-->
+    <div class="modal fade" id="staticDelete" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        是否确定删除班级？
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button id="btn_delete" type="button" class="btn btn-primary" style="background-color: red;border: none;" data-bs-dismiss="modal" onclick="deleteClick()">确定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+<!--脚本-->
+{% block script %}
+<script type="text/javascript">
+
+    loadTable(1);
+    /**
+     * 班级列表
+     * @param num
+     */
+    function loadTable(num){
+        $("#mytable").bootstrapTable({
+            url:"classlist",
+            method:"post",
+            dataField:"data", //返回json的key
+            contentType:"application/json",
+            dataType:"json",
+            striped:false,
+            cache:false,
+            pagination:true,
+            paginationDetailHAlign:"display",
+            sidePagination:"server",
+            pageNumber:1,
+            pageSize:10,
+            queryParams:function (param) {
+                var temp = {
+                    page:(param.offset/param.limit)+1,
+                    size:10,
+                };
+                return temp;
+            },
+            columns:[{
+                field:"name",
+                title:"班级名称",
+            },{
+                field:"id",
+                title:"操作",
+                formatter:actionFormatter
+            },/*,{
+                    field:"username",
+                    title:"操作",
+                    width:120,
+                    align:"center",
+                    valign:"middle",
+                    formatter:actionFormatter
+                }*/],
+            onLoadSuccess:function(){
+                console.log("table加载成功")
+            },
+            onLoadError:function(e){
+                console.log("table加载失败");
+            },
+        })
+    }
+
+    /**
+     * 班级操作
+     */
+    function actionFormatter(value,row,index){
+        return "<div><a href='javascript:;' data-bs-toggle=\"modal\" data-bs-target=\"#staticBackdrop\" onclick='rename("+row.id+")' style='color: dodgerblue'>重命名</a><a href='javascript:;' data-bs-toggle=\"modal\" data-bs-target=\"#staticDelete\" onclick='delclass("+row.id+")' style='color: dodgerblue'>删除</a></div>"
+    }
+
+    /**
+     * 创建班级
+     */
+    function createClass(){
+        var classname = $("#txt_name").val()
+        console.log("classname:"+classname)
+        post("mclass/createClass",{"name":classname},function(result){
+            $("#mytable").bootstrapTable('refresh', {url : "classlist"});
+        })
+    }
+
+    var currentClassid;
+
+    /**
+     * 重命名
+     */
+    function rename(id){
+        currentClassid = id;
+        console.log("重命名");
+    }
+
+    /**
+     * 删除班级
+     */
+    function delclass(id){
+        console.log("删除");
+        currentClassid = id;
+    }
+
+    /**
+     * 确定删除班级
+     */
+    function deleteClick(){
+        post("mclass/deleteClass",{classid:currentClassid},function(res){
+            $("#mytable").bootstrapTable('refresh', {url : "classlist"});
+        })
+    }
+
+    /**
+     * 确定修改
+     */
+    function okClick(){
+        var _classname = $("#txt_classname").val()
+        if(_classname != undefined){
+            console.log(_classname);
+            //提交班级信息
+            post("mclass/editorClassName",{classid:currentClassid,classname:_classname},function(result){
+                console.log(result);
+                $("#mytable").bootstrapTable('refresh', {url : "classlist"});
+            })
+        }
+    }
+
+</script>
+{% endblock %}

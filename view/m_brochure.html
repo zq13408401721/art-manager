@@ -1,0 +1,159 @@
+{% extends "m_base.html" %}
+
+{% block style %}
+{% endblock %}
+
+{% block content %}
+<!--创建学校对应的信息-->
+<div>
+    <input type="text" id="input_title" class="input_txt" placeholder="请输入标题">
+</div>
+<!--创建图标-->
+<div style="margin-top: 30px;">
+    <input type="text" id="input_tab" class="input_txt" placeholder="请输入图标名">
+    <input type="button" style="margin-bottom: 30px;margin-left: 20px;" value="创建图标" class="btn_red" onclick="createTab()">
+</div>
+
+<!--图标对应的table-->
+<table id="mytable" class="table-box row-height"></table>
+
+<!--图片选择-->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">图标选择</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button id="btn_ok" type="button" class="btn btn-primary" style="background-color: red;border: none;" data-bs-dismiss="modal" onclick="okClick()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+
+    loadTable(1)
+
+    function loadTable(num){
+        $("#mytable").bootstrapTable({
+            url:"brochureList",
+            method:"post",
+            dataField:"data", //返回json的key
+            contentType:"application/json",
+            dataType:"json",
+            striped:false,
+            cache:false,
+            pagination:true,
+            paginationDetailHAlign:"display",
+            sidePagination:"server",
+            pageNumber:1,
+            pageSize:10,
+            queryParams:function (param) {
+                var temp = {
+                    page:(param.offset/param.limit)+1,
+                    size:10,
+                };
+                return temp;
+            },
+            columns:[{
+                field:"title",
+                title:"学校标题",
+            },{
+                field:"label",
+                title:"图标名称",
+            },{
+                field:"icon",
+                title:"图标",
+                formatter:iconFormatter
+            },{
+                field: "url",
+                title: "图片地址",
+                formatter:urlFormatter
+            }/*,{
+                    field:"username",
+                    title:"操作",
+                    width:120,
+                    align:"center",
+                    valign:"middle",
+                    formatter:actionFormatter
+                }*/],
+            onLoadSuccess:function(){
+                console.log("table加载成功")
+            },
+            onLoadError:function(e){
+                console.log("table加载失败");
+            },
+        })
+    }
+
+    function iconFormatter(value,row,index){
+        return "<div><img src='"+row.icon+"' width='40px' height='40px'></div>" +
+            "<div><input accept='image/*' type='file' id='upload_img' onchange='uploadFile(event)'/></div>"
+    }
+
+    /**
+     * 上传文件
+     * @param evt
+     */
+    function uploadFile(evt){
+        var imgFile = e.target.files[0]; //获取图片文件
+        var formData = new FormData();
+        formData.append('file',imgFile);
+        // post
+        post("brochure/uploadFile",formData,function(res){
+
+        })
+    }
+
+    /**
+     * 上传图片
+     */
+    function uploadUrl(evt){
+
+    }
+
+    /**
+     * 创建图标
+     */
+    function createTab(){
+        var title = $("#input_title").val()
+        var tab = $("#input_tab").val()
+        if(title && title.length == 0){
+            alert("请输入标题")
+        }else if(tab && tab.length == 0){
+            alert("请输入图标名称")
+        }else{
+            post("")
+        }
+    }
+
+    /**
+     * 图标地址
+     * @param value
+     * @param row
+     * @param index
+     */
+    function urlFormatter(value,row,index){
+        return "<div><img src='"+row.url+"' width='40px' height='40px'></div>" +
+            "<div><input accept='image/*' type='file' id='upload_url' onchange='uploadUrl(event)'/></div>"
+    }
+
+    /**
+     * 确定图标选择
+     */
+    function okClick(){
+
+    }
+
+</script>
+
+{% endblock %}

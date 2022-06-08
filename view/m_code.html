@@ -1,0 +1,139 @@
+{% extends "m_base.html" %}
+
+{% block style %}
+{% endblock %}
+
+{% block content %}
+<!--老师班级账号关联-->
+<div style="width: 100%;">
+    <div style="display: flex; flex-direction: row; justify-content: space-between;">
+        <div>
+            总共<span style="color: red;font-weight: bold;"><$ total $></span>个，已激活<span style="color: red;font-weight: bold;"><$ activenum $></span>，未激活<span style="color: red;font-weight: bold;"><$ unactivenum $></span>个
+        </div>
+        <!--激活码筛选条件-->
+        <div class="dropdown" style="float: right;">
+            <button type="button" class="btn btn-danger dropdown-toggle" style="background-color: red;border: none;" data-bs-toggle="dropdown" id="btncodestate">全部</button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <li><a class="dropdown-item" href="#" onclick="selectCodeState('全部',999)">全部</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectCodeState('激活',1)">激活</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectCodeState('未激活',0)">未激活</a></li>
+            </ul>
+        </div>
+    </div>
+    <!--账号表-->
+    <table id="mytable" class="table-box" style="margin-top: 20px;"></table>
+</div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+
+        var currentCodeState = 999
+
+        loadTable(1)
+
+        function loadTable(num){
+            $("#mytable").bootstrapTable({
+                url:"codeList",
+                method:"post",
+                dataField:"data", //返回json的key
+                contentType:"application/json",
+                dataType:"json",
+                striped:false,
+                cache:false,
+                pagination:true,
+                paginationDetailHAlign:"display",
+                sidePagination:"server",
+                pageNumber:1,
+                pageSize:10,
+                queryParams:function (param) {
+                    var temp = {
+                        page:(param.offset/param.limit)+1,
+                        size:10,
+                        active:currentCodeState
+                    };
+                    return temp;
+                },
+                columns:[{
+                    field:"code",
+                    title:"激活码ID",
+                },{
+                    field:"active",
+                    title:"状态",
+                    formatter: activeState
+                },{
+                    field:"type",
+                    title:"有效期",
+                    formatter:dateType
+                }/*,{
+                    field:"username",
+                    title:"操作",
+                    width:120,
+                    align:"center",
+                    valign:"middle",
+                    formatter:actionFormatter
+                }*/],
+                onLoadSuccess:function(){
+                    console.log("table加载成功")
+                },
+                onLoadError:function(e){
+                    console.log("table加载失败");
+                },
+            })
+        }
+
+        /**
+         * 账号状态
+         * @param value
+         * @param row
+         * @param index
+         */
+        function activeState(value,row,index){
+            if(value == 1){
+                return "<span style='color:red'>已激活</span>";
+            }else if(value == 0){
+                return "<span style='color:black'>未激活</span>";
+            }else{
+                return "<span style='color:gray'>已过期</span>";
+            }
+        }
+
+        /**
+         * 有效期
+         * @param value
+         * @param row
+         * @param index
+         */
+        function dateType(value,row,index){
+            if(value == 6){
+                return "三天"
+            }else if(value == 1){
+                return "一个月"
+            }else if(value == 2){
+                return "三个月"
+            }else if(value == 3){
+                return "六个月"
+            }else if(value == 4){
+                return "十二个月"
+            }else if(value == 5){
+                return "二十四个月"
+            }else if(value == 7){
+                return "5分钟"
+            }
+        }
+
+        /**
+         * 选择激活码状态
+         * @param name
+         * @param value
+         */
+        function selectCodeState(name,value){
+            currentCodeState = value
+            $("#btncodestate").html(name)
+            //网络请求刷新列表
+            $("#mytable").bootstrapTable('refresh', {url : "codeList"});
+        }
+
+    </script>
+{% endblock %}

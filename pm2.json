@@ -1,0 +1,15 @@
+{
+  "apps": [{
+    "name": "server",
+    "script": "production.js",
+    "cwd": "/Users/zhangquan/work/art/school/server/server",
+    "exec_mode": "fork",
+    "max_memory_restart": "4G",
+    "autorestart": true,
+    "node_args": [],
+    "args": [],
+    "env": {
+      
+    }
+  }]
+}
