@@ -1,0 +1,47 @@
+{% extends "m_base.html" %}
+
+{% block style %}
+    <style>
+        .mark-bg{
+            background-color: white;
+            margin: 20px 10px;
+        }
+        .mark-box{
+            width: 100%;
+            white-space: nowrap;
+            display: inline;
+            float: left;
+        }
+        .mark-item{
+            display: flex;
+            text-align: center;
+        }
+        .mark-item img{
+            position: absolute;
+            top: 0;
+            right:0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!--什么是标签-->
+    <div class="mark-bg">
+        什么是标签
+    </div>
+    <!--标签-->
+    <div class="mark-box">
+        {% for item in markdata %}
+            <div>
+                <$ itemm.name $>
+                <img src="">
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    var markdata = []
+</script>
+{% endblock %}
