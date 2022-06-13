@@ -8,6 +8,7 @@ module.exports = class extends Base{
      */
     async schoolgalleryAction(){
         this.assign('titlename',"学校图库");
+        this.assign('currentmenu',"schoolupload");
         return this.returnView('m_galleryupload.html');
     }
 
@@ -17,6 +18,7 @@ module.exports = class extends Base{
      */
     async schoolbookbagAction(){
         this.assign('titlename',"学校书架");
+        this.assign('currentmenu',"schoolcreatebook")
         return this.returnView('m_bookbag.html');
     }
 
@@ -25,6 +27,7 @@ module.exports = class extends Base{
      */
     async sharegalleryAction(){
         this.assign('titlename',"共享图片库");
+        this.assign('currentmenu',"shareupload")
         return this.returnView('m_galleryupload.html');
     }
 
@@ -33,6 +36,7 @@ module.exports = class extends Base{
      */
     async sharebookbagAction(){
         this.assign('titlename',"共享书架");
+        this.assign('currentmenu',"addsharebook")
         return this.returnView('m_sharebookbagmanager.html');
     }
 
@@ -41,6 +45,12 @@ module.exports = class extends Base{
      */
      async galleryuploadAction(){
         this.assign('titlename',"图片上传");
+        const type = this.get("type")
+        if(type == 1){
+            this.assign('currentmenu',"schoolupload")
+        }else{
+            this.assign('currentmenu',"shareupload")
+        }
         return this.returnView('m_galleryupload.html');
     }
 
@@ -50,10 +60,16 @@ module.exports = class extends Base{
      */
      async markmanagerAction(){
         this.assign('titlename',"标签管理");
+        const type = this.get('type')
+        if(type == 1){
+            this.assign('currentmenu',"schoolmark")
+        }else{
+            this.assign('currentmenu',"sharemark")
+        }
         //查询学校对应的标签
         const info = await this.getUserinfo()
         if(info){
-            const result = await this.model.queryMark({schoolid:info.sid})
+            const result = await this.model("book").queryMark({schoolid:info.sid})
             this.assign('marks',result)
         }
         return this.returnView('m_markmanager.html');
@@ -64,7 +80,8 @@ module.exports = class extends Base{
      * @returns 
      */
     async createbookbagAction(){
-        this.assign('titlename',"创建书架");
+        this.assign('titlename',"创建书本");
+        this.assign('currentmenu',"schoolcreatebook")
         return this.returnView('m_bookbag.html');
     }
 

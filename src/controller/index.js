@@ -30,8 +30,8 @@ module.exports = class extends Base {
         //menu
         //const menu = await this.model("index").menuList({schoolid:result.school_id})
 
-        //this.returnResult({url:"http://127.0.0.1:12006/mclass/classmanager",name:result.name})
-        this.returnResult({url:"http://res.yimios.com:9080/mclass/classmanager",name:result.name})
+        this.returnResult({url:"http://127.0.0.1:12006/mclass/classmanager",name:result.name})
+        //this.returnResult({url:"http://res.yimios.com:9080/mclass/classmanager",name:result.name})
       }else{
         this.returnLoginError()
       }

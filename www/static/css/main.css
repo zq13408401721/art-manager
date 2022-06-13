@@ -1,5 +1,6 @@
 html,body{
     height: 100%;
+    overflow-y: hidden;
 }
 .school_name{
     width:200px;
@@ -17,17 +18,27 @@ html,body{
 .menu ul{
     list-style-type: none;
 }
-.menu ul li{
-    height: 60px;
+
+.menu .close{
+    height:60px;
     line-height: 60px;
+}
+
+.menu ul li {
     margin: 10px 0;
     font-size: 16px;
     color: #FFFFFF;
 }
 
+
+
 a {
     color: dodgerblue;
     text-decoration: none;
+    word-break: keep-all;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .container{
@@ -39,6 +50,7 @@ a {
 .menu{
     width: 200px;
     background-color: black;
+    overflow-y: scroll;
 }
 
 .content{

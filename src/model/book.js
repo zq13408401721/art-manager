@@ -9,7 +9,7 @@ module.exports = class extends think.Model {
      * @returns 
      */
     async createMark(option){
-        return await this.mode("bookmark").thenAdd(option,{schoolid:option.schoolid,name:option.name})
+        return await this.model("bookmark").thenAdd(option,{schoolid:option.schoolid,name:option.name})
     }
 
     /**
@@ -18,7 +18,7 @@ module.exports = class extends think.Model {
      * @returns 
      */
     async deleteMark(option){
-        return await this.mode("bookmark").where({schoolid:option.schoolid,id:option.id}).delete()
+        return await this.model("bookmark").where({schoolid:option.schoolid,id:option.id}).delete()
     }
 
     /**
@@ -26,7 +26,7 @@ module.exports = class extends think.Model {
      * @param {} option 
      */
     async queryMark(option){
-        return await this.mode("bookmark").where({schoolid:option.schoolid}).select()
+        return await this.model("bookmark").where({schoolid:option.schoolid}).select()
     }
 
     /**
@@ -34,7 +34,7 @@ module.exports = class extends think.Model {
      * @param {} option 
      */
     async addBookResClassify(option){
-        return await this.mode("bookres_classify").thenAdd(option,{schoolid:option.schoolid,name:option.name})
+        return await this.model("bookres_classify").thenAdd(option,{schoolid:option.schoolid,name:option.name})
     }
 
 
@@ -43,7 +43,7 @@ module.exports = class extends think.Model {
      * @param {*} option 
      */
     async queryBookResClassifyBySchoolid(option){
-        return await this.mode("bookres_classify").where({schoolid:option.schoolid}).select()
+        return await this.model("bookres_classify").where({schoolid:option.schoolid}).select()
     }
 
     /**
@@ -51,7 +51,7 @@ module.exports = class extends think.Model {
      * @param {*} option 
      */
     async queryBookResClassifyByPid(option){
-        return await this.mode("bookres_classify").where({pid:option.pid}).select()
+        return await this.model("bookres_classify").where({pid:option.pid}).select()
     }
 
     /**
@@ -60,7 +60,7 @@ module.exports = class extends think.Model {
      * @returns 
      */
     async deleteBookResClassifyByOption(option){
-        return await this.mode("bookres_classify").where(option).delete()
+        return await this.model("bookres_classify").where(option).delete()
     }
 
     /**
@@ -69,7 +69,7 @@ module.exports = class extends think.Model {
      */
     async queryImagesByClassifyId(option){
         //分页查询
-        return await this.mode("bookres_relation").where({classifyid:option.classifyid,schoolid:option.schoolid})
+        return await this.model("bookres_relation").where({classifyid:option.classifyid,schoolid:option.schoolid})
         .page({page:option.page,size:option.size}).select()
     }
 
@@ -79,7 +79,7 @@ module.exports = class extends think.Model {
      */
     async queryImagesByMarks(option){
         //分页查询
-        return await this.mode("boolres_markrelation").where({markid:["in",option.markids],schoolid:option.schoolid})
+        return await this.model("boolres_markrelation").where({markid:["in",option.markids],schoolid:option.schoolid})
         .page({page:option.page,size:option.size}).select()
     }
 
@@ -88,7 +88,7 @@ module.exports = class extends think.Model {
      * @param {schoolid,id} option 
      */
     async deleteBookResRelationByClassify(option){
-        return await this.mode("bookres_relation").where({schoolid:option.schoolid,id:option.id}).delete()
+        return await this.model("bookres_relation").where({schoolid:option.schoolid,id:option.id}).delete()
     }
 
     /**
@@ -96,7 +96,7 @@ module.exports = class extends think.Model {
      * @param {} option 
      */
     async deleteBookResMarkRelationByMark(option){
-        return await this.mode("bookres_markrelation").where({schoolid:option.schoolid,markid:option.markid}).delete()
+        return await this.model("bookres_markrelation").where({schoolid:option.schoolid,markid:option.markid}).delete()
     }
 
     /**
@@ -104,7 +104,7 @@ module.exports = class extends think.Model {
      * @param {} option 
      */
     async addBookbag(option){
-        return await this.mode("bookbag").thenAdd(option,{name:option.name,schoolid:option.schoolid})
+        return await this.model("bookbag").thenAdd(option,{name:option.name,schoolid:option.schoolid})
     }
 
     /**
@@ -112,7 +112,7 @@ module.exports = class extends think.Model {
      * @param {*} option 
      */
     async updateBookbag(option){
-        return await this.mode("bookbag").where({schoolid:option.schoolid,id:option.id}).update(option)
+        return await this.model("bookbag").where({schoolid:option.schoolid,id:option.id}).update(option)
     }
 
     /**
@@ -120,7 +120,7 @@ module.exports = class extends think.Model {
      * @param {*} option 
      */
     async deleteBookbag(option){
-        return await this.mode("bookbag").where({schoolid:option.schoolid,id:option.id}).delete()
+        return await this.model("bookbag").where({schoolid:option.schoolid,id:option.id}).delete()
     }
 
     /**
@@ -128,7 +128,7 @@ module.exports = class extends think.Model {
      * @param {*} option 
      */
     async updateBookPages(option){
-        return await this.mode("book").where({id:option.id}).update({pages:option.pages})
+        return await this.model("book").where({id:option.id}).update({pages:option.pages})
     }
 
     /**
@@ -136,7 +136,7 @@ module.exports = class extends think.Model {
      * @param {*} option 
      */
     async addBookImage(option){
-        return await this.mode("book_image").thenAdd(option,{bookid:option.bookid,resourceid:option.resourceid})
+        return await this.model("book_image").thenAdd(option,{bookid:option.bookid,resourceid:option.resourceid})
     }
 
     /**
@@ -144,7 +144,7 @@ module.exports = class extends think.Model {
      * @param {*} option 
      */
     async updateBookImage(option){
-        return await this.mode("book_image").where({bookid:option.bookid,resourceid:option.resourceid}).update({sort:option.sort})
+        return await this.model("book_image").where({bookid:option.bookid,resourceid:option.resourceid}).update({sort:option.sort})
     }
 
     /**
@@ -152,7 +152,7 @@ module.exports = class extends think.Model {
      * @param {*} option 
      */
     async queryBookImage(option){
-        return await this.mode("book_image").where({bookid:option.bookid}).page({page:option.page,size:option.size}).select()
+        return await this.model("book_image").where({bookid:option.bookid}).page({page:option.page,size:option.size}).select()
     }
 
     
